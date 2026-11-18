@@ -5,4 +5,25 @@
     <string name="weather_slot">Weather</string>
     <string name="left_slot">Left bar</string>
     <string name="right_slot">Right bar</string>
+
+    <!-- Customise screen -->
+    <string name="cfg_accent">Accent colour</string>
+    <string name="cfg_hands">Hands colour</string>
+    <string name="cfg_show_bars">Side bars</string>
+    <string name="cfg_show_weather">Weather</string>
+    <string name="cfg_show_event">Event</string>
+    <string name="cfg_show_battery">Battery ring</string>
+    <string name="cfg_show_date">Date</string>
+    <string name="cfg_show_seconds">Seconds hand</string>
+
+    <string name="color_orange">Orange</string>
+    <string name="color_red">Red</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_violet">Violet</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_white">White</string>
+    <string name="color_grey">Grey</string>
+    <string name="color_dark_grey">Dark grey</string>
 </resources>

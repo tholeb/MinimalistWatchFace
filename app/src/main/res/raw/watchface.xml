@@ -7,8 +7,35 @@
   <Metadata key="CLOCK_TYPE" value="ANALOG" />
   <Metadata key="PREVIEW_TIME" value="10:08:32" />
 
+  <!-- ===== Options in the watch's Customise screen ===== -->
+  <UserConfigurations>
+    <ColorConfiguration id="accent" displayName="cfg_accent" defaultValue="orange">
+      <ColorOption id="orange" displayName="color_orange" colors="#FFFF6B35" />
+      <ColorOption id="red" displayName="color_red" colors="#FFE5484D" />
+      <ColorOption id="yellow" displayName="color_yellow" colors="#FFFFC24A" />
+      <ColorOption id="green" displayName="color_green" colors="#FF4CC36A" />
+      <ColorOption id="blue" displayName="color_blue" colors="#FF4FA3FF" />
+      <ColorOption id="violet" displayName="color_violet" colors="#FFA672F2" />
+      <ColorOption id="pink" displayName="color_pink" colors="#FFFF7EB6" />
+      <ColorOption id="white" displayName="color_white" colors="#FFFFFFFF" />
+    </ColorConfiguration>
+    <ColorConfiguration id="hands" displayName="cfg_hands" defaultValue="grey">
+      <ColorOption id="grey" displayName="color_grey" colors="#FF8C8C8C" />
+      <ColorOption id="white" displayName="color_white" colors="#FFFFFFFF" />
+      <ColorOption id="dark" displayName="color_dark_grey" colors="#FF5A5A5A" />
+    </ColorConfiguration>
+    <BooleanConfiguration id="show_bars" displayName="cfg_show_bars" screenReaderText="cfg_show_bars" defaultValue="TRUE" />
+    <BooleanConfiguration id="show_weather" displayName="cfg_show_weather" screenReaderText="cfg_show_weather" defaultValue="TRUE" />
+    <BooleanConfiguration id="show_event" displayName="cfg_show_event" screenReaderText="cfg_show_event" defaultValue="TRUE" />
+    <BooleanConfiguration id="show_battery" displayName="cfg_show_battery" screenReaderText="cfg_show_battery" defaultValue="TRUE" />
+    <BooleanConfiguration id="show_date" displayName="cfg_show_date" screenReaderText="cfg_show_date" defaultValue="TRUE" />
+    <BooleanConfiguration id="show_seconds" displayName="cfg_show_seconds" screenReaderText="cfg_show_seconds" defaultValue="TRUE" />
+  </UserConfigurations>
+
   <Scene backgroundColor="#FF000000">
 
+    <BooleanConfiguration id="show_battery">
+    <BooleanOption id="TRUE">
     <!-- ===== Battery ring around the face (clockwise from 12 o'clock) ===== -->
     <Group name="battery" x="0" y="0" width="450" height="450">
       <!-- Track -->
@@ -41,7 +68,11 @@
       </Condition>
       <Variant mode="AMBIENT" target="alpha" value="110" />
     </Group>
+    </BooleanOption>
+    </BooleanConfiguration>
 
+    <BooleanConfiguration id="show_weather">
+    <BooleanOption id="TRUE">
     <!-- ===== Weather (icon + temperature) ===== -->
     <!-- WEATHER.CONDITION: 0 unknown, 1 clear, 2 cloudy, 3 fog, 4 heavy rain, 5 heavy snow, 6 rain,
          7 snow, 8 sunny, 9 thunderstorm, 10 sleet, 11 light snow, 12 light rain, 13 mist,
@@ -207,6 +238,8 @@
       </Complication>
       <Variant mode="AMBIENT" target="alpha" value="100" />
     </ComplicationSlot>
+    </BooleanOption>
+    </BooleanConfiguration>
 
     <!-- ===== Digital clock (follows phone 12/24h setting) ===== -->
     <DigitalClock x="100" y="88" width="250" height="56">
@@ -215,6 +248,8 @@
       </TimeText>
     </DigitalClock>
 
+    <BooleanConfiguration id="show_date">
+    <BooleanOption id="TRUE">
     <!-- ===== Date, grey (e.g. "Sat 18/11") ===== -->
     <PartText x="125" y="60" width="200" height="26">
       <Text align="CENTER">
@@ -224,8 +259,12 @@
       </Text>
       <Variant mode="AMBIENT" target="alpha" value="170" />
     </PartText>
+    </BooleanOption>
+    </BooleanConfiguration>
 
 
+    <BooleanConfiguration id="show_event">
+    <BooleanOption id="TRUE">
     <!-- ===== Next event (calendar complication, user-customizable) ===== -->
     <!-- Calendar icon centred on top, "time : text" centred below, at ~60 % opacity -->
     <ComplicationSlot slotId="0" displayName="event_slot" x="85" y="290" width="280" height="46"
@@ -268,7 +307,11 @@
       </Complication>
       <Variant mode="AMBIENT" target="alpha" value="170" />
     </ComplicationSlot>
+    </BooleanOption>
+    </BooleanConfiguration>
 
+    <BooleanConfiguration id="show_bars">
+    <BooleanOption id="TRUE">
     <!-- ===== Side bar complications (inside the battery ring) =====
          RANGED_VALUE fills the bar from the bottom up; SHORT_TEXT shows icon + text only.
          Each slot covers half the face so the arc can be drawn; the BoundingBox
@@ -276,9 +319,98 @@
 
     <!-- Left: arc from 230 deg (bottom) clockwise to 310 deg (top) -->
     <ComplicationSlot slotId="2" displayName="left_slot" x="0" y="0" width="225" height="450"
-        supportedTypes="RANGED_VALUE SHORT_TEXT" isCustomizable="TRUE">
-      <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
+        supportedTypes="EMPTY RANGED_VALUE SHORT_TEXT" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
       <BoundingBox x="0" y="130" width="110" height="190" />
+      <!-- Default ("Empty"): UV index from the watch weather, coloured with the WHO UV scale -->
+      <Complication type="EMPTY">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
+            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
+          </Arc>
+        </PartDraw>
+        <Condition>
+          <Expressions>
+            <Expression name="na"><![CDATA[![WEATHER.IS_AVAILABLE]]]></Expression>
+            <Expression name="low"><![CDATA[[WEATHER.UV_INDEX] < 3]]></Expression>
+            <Expression name="moderate"><![CDATA[[WEATHER.UV_INDEX] < 6]]></Expression>
+            <Expression name="high"><![CDATA[[WEATHER.UV_INDEX] < 8]]></Expression>
+            <Expression name="veryHigh"><![CDATA[[WEATHER.UV_INDEX] < 11]]></Expression>
+          </Expressions>
+          <Compare expression="na">
+            <PartText x="30" y="216" width="70" height="22">
+              <Text align="CENTER">
+                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FF5A5A5A"><Template>UV --</Template></Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Compare expression="low">
+            <PartDraw x="0" y="0" width="225" height="450">
+              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
+                <Stroke color="#FF4CC36A" thickness="5" cap="ROUND" />
+                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
+              </Arc>
+            </PartDraw>
+          </Compare>
+          <Compare expression="moderate">
+            <PartDraw x="0" y="0" width="225" height="450">
+              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
+                <Stroke color="#FFF2C94C" thickness="5" cap="ROUND" />
+                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
+              </Arc>
+            </PartDraw>
+          </Compare>
+          <Compare expression="high">
+            <PartDraw x="0" y="0" width="225" height="450">
+              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
+                <Stroke color="#FFFF8A3D" thickness="5" cap="ROUND" />
+                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
+              </Arc>
+            </PartDraw>
+          </Compare>
+          <Compare expression="veryHigh">
+            <PartDraw x="0" y="0" width="225" height="450">
+              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
+                <Stroke color="#FFE5484D" thickness="5" cap="ROUND" />
+                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
+              </Arc>
+            </PartDraw>
+          </Compare>
+          <Default>
+            <PartDraw x="0" y="0" width="225" height="450">
+              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
+                <Stroke color="#FFA672F2" thickness="5" cap="ROUND" />
+              </Arc>
+            </PartDraw>
+          </Default>
+        </Condition>
+        <!-- Sun icon -->
+        <PartDraw x="54" y="190" width="22" height="22">
+          <Ellipse x="7" y="7" width="8" height="8"><Fill color="#FFFFC24A" /></Ellipse>
+          <Line startX="11" startY="1.5" endX="11" endY="4"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="11" startY="18" endX="11" endY="20.5"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="1.5" startY="11" endX="4" endY="11"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="18" startY="11" endX="20.5" endY="11"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="4.3" startY="4.3" endX="6" endY="6"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="16" startY="16" endX="17.7" endY="17.7"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="17.7" startY="4.3" endX="16" endY="6"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+          <Line startX="6" startY="16" endX="4.3" endY="17.7"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
+        </PartDraw>
+        <Condition>
+          <Expressions>
+            <Expression name="ok"><![CDATA[[WEATHER.IS_AVAILABLE]]]></Expression>
+          </Expressions>
+          <Compare expression="ok">
+            <PartText x="30" y="216" width="70" height="22">
+              <Text align="CENTER">
+                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
+                  <Template>UV %d<Parameter expression="[WEATHER.UV_INDEX]" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
       <Complication type="RANGED_VALUE">
         <PartDraw x="0" y="0" width="225" height="450">
           <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
@@ -322,9 +454,51 @@
 
     <!-- Right: arc from 130 deg (bottom) counter-clockwise to 50 deg (top) -->
     <ComplicationSlot slotId="3" displayName="right_slot" x="225" y="0" width="225" height="450"
-        supportedTypes="RANGED_VALUE SHORT_TEXT" isCustomizable="TRUE">
-      <DefaultProviderPolicy defaultSystemProvider="HEART_RATE" defaultSystemProviderType="SHORT_TEXT" />
+        supportedTypes="EMPTY RANGED_VALUE SHORT_TEXT" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
       <BoundingBox x="115" y="130" width="110" height="190" />
+      <!-- Default ("Empty"): chance of rain from the watch weather -->
+      <Complication type="EMPTY">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
+          </Arc>
+        </PartDraw>
+        <!-- Rain drop icon -->
+        <PartDraw x="149" y="190" width="22" height="22">
+          <Ellipse x="5.5" y="8" width="11" height="11"><Fill color="#FF4FA3FF" /></Ellipse>
+          <Line startX="11" startY="2" endX="6.2" endY="11"><Stroke color="#FF4FA3FF" thickness="2" cap="ROUND" /></Line>
+          <Line startX="11" startY="2" endX="15.8" endY="11"><Stroke color="#FF4FA3FF" thickness="2" cap="ROUND" /></Line>
+          <Line startX="11" startY="3" endX="11" endY="10"><Stroke color="#FF4FA3FF" thickness="5" cap="ROUND" /></Line>
+        </PartDraw>
+        <Condition>
+          <Expressions>
+            <Expression name="ok"><![CDATA[[WEATHER.IS_AVAILABLE]]]></Expression>
+          </Expressions>
+          <Compare expression="ok">
+            <PartDraw x="0" y="0" width="225" height="450">
+              <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="130" direction="COUNTER_CLOCKWISE">
+                <Stroke color="#FF4FA3FF" thickness="5" cap="ROUND" />
+                <Transform target="endAngle" value="130 - 80 * clamp([WEATHER.CHANCE_OF_PRECIPITATION] / 100, 0, 1)" />
+              </Arc>
+            </PartDraw>
+            <PartText x="125" y="216" width="70" height="22">
+              <Text align="CENTER">
+                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
+                  <Template>%d%%<Parameter expression="[WEATHER.CHANCE_OF_PRECIPITATION]" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText x="125" y="216" width="70" height="22">
+              <Text align="CENTER">
+                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FF5A5A5A"><Template>--</Template></Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Complication>
       <Complication type="RANGED_VALUE">
         <PartDraw x="0" y="0" width="225" height="450">
           <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
@@ -365,27 +539,33 @@
       </Complication>
       <Variant mode="AMBIENT" target="alpha" value="110" />
     </ComplicationSlot>
+    </BooleanOption>
+    </BooleanConfiguration>
 
     <!-- ===== Analog hands ===== -->
     <!-- Hour -->
     <PartDraw x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
-      <Line startX="225" startY="225" endX="225" endY="128"><Stroke color="#FF8C8C8C" thickness="9" cap="ROUND" /></Line>
+      <Line startX="225" startY="225" endX="225" endY="128"><Stroke color="[CONFIGURATION.hands]" thickness="9" cap="ROUND" /></Line>
       <Transform target="angle" value="[HOUR_0_11_MINUTE] * 30" />
     </PartDraw>
     <!-- Minute -->
     <PartDraw x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
-      <Line startX="225" startY="225" endX="225" endY="62"><Stroke color="#FF8C8C8C" thickness="6" cap="ROUND" /></Line>
+      <Line startX="225" startY="225" endX="225" endY="62"><Stroke color="[CONFIGURATION.hands]" thickness="6" cap="ROUND" /></Line>
       <Transform target="angle" value="[MINUTE_SECOND] * 6" />
     </PartDraw>
     <!-- Second (hidden in always-on mode) -->
+    <BooleanConfiguration id="show_seconds">
+    <BooleanOption id="TRUE">
     <PartDraw x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
-      <Line startX="225" startY="252" endX="225" endY="40"><Stroke color="#FFFF6B35" thickness="2" cap="ROUND" /></Line>
+      <Line startX="225" startY="252" endX="225" endY="40"><Stroke color="[CONFIGURATION.accent]" thickness="2" cap="ROUND" /></Line>
       <Transform target="angle" value="[SECOND] * 6" />
       <Variant mode="AMBIENT" target="alpha" value="0" />
     </PartDraw>
+    </BooleanOption>
+    </BooleanConfiguration>
     <!-- Center cap -->
     <PartDraw x="215" y="215" width="20" height="20">
-      <Ellipse x="2" y="2" width="16" height="16"><Fill color="#FFFF6B35" /></Ellipse>
+      <Ellipse x="2" y="2" width="16" height="16"><Fill color="[CONFIGURATION.accent]" /></Ellipse>
       <Ellipse x="7" y="7" width="6" height="6"><Fill color="#FF000000" /></Ellipse>
     </PartDraw>
 
