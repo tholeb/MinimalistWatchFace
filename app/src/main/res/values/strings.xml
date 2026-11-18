@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Minimal Hybrid</string>
+    <string name="event_slot">Event</string>
+    <string name="weather_slot">Weather</string>
+    <string name="left_slot">Left bar</string>
+    <string name="right_slot">Right bar</string>
+</resources>
