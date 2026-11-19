@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Minimal Hybrid - Watch Face Format v2 (Galaxy Watch, Wear OS 5+)
-  Analog + digital time, weather (icon + temperature), battery, next event.
+  Analog + digital time, two gauge rings, a customisable widget, weather (icon + temperature), battery.
 -->
 <WatchFace width="450" height="450">
   <Metadata key="CLOCK_TYPE" value="ANALOG" />
@@ -24,18 +24,28 @@
       <ColorOption id="white" displayName="color_white" colors="#FFFFFFFF" />
       <ColorOption id="dark" displayName="color_dark_grey" colors="#FF5A5A5A" />
     </ColorConfiguration>
-    <BooleanConfiguration id="show_bars" displayName="cfg_show_bars" screenReaderText="cfg_show_bars" defaultValue="TRUE" />
-    <BooleanConfiguration id="show_weather" displayName="cfg_show_weather" screenReaderText="cfg_show_weather" defaultValue="TRUE" />
-    <BooleanConfiguration id="show_event" displayName="cfg_show_event" screenReaderText="cfg_show_event" defaultValue="TRUE" />
-    <BooleanConfiguration id="show_battery" displayName="cfg_show_battery" screenReaderText="cfg_show_battery" defaultValue="TRUE" />
-    <BooleanConfiguration id="show_date" displayName="cfg_show_date" screenReaderText="cfg_show_date" defaultValue="TRUE" />
-    <BooleanConfiguration id="show_seconds" displayName="cfg_show_seconds" screenReaderText="cfg_show_seconds" defaultValue="TRUE" />
+    <ListConfiguration id="show_battery" displayName="cfg_show_battery" screenReaderText="cfg_show_battery" defaultValue="on">
+      <ListOption id="on" displayName="opt_show" screenReaderText="opt_show" />
+      <ListOption id="off" displayName="opt_hide" screenReaderText="opt_hide" />
+    </ListConfiguration>
+    <ListConfiguration id="show_weather" displayName="cfg_show_weather" screenReaderText="cfg_show_weather" defaultValue="on">
+      <ListOption id="on" displayName="opt_show" screenReaderText="opt_show" />
+      <ListOption id="off" displayName="opt_hide" screenReaderText="opt_hide" />
+    </ListConfiguration>
+    <ListConfiguration id="show_date" displayName="cfg_show_date" screenReaderText="cfg_show_date" defaultValue="on">
+      <ListOption id="on" displayName="opt_show" screenReaderText="opt_show" />
+      <ListOption id="off" displayName="opt_hide" screenReaderText="opt_hide" />
+    </ListConfiguration>
+    <ListConfiguration id="show_seconds" displayName="cfg_show_seconds" screenReaderText="cfg_show_seconds" defaultValue="on">
+      <ListOption id="on" displayName="opt_show" screenReaderText="opt_show" />
+      <ListOption id="off" displayName="opt_hide" screenReaderText="opt_hide" />
+    </ListConfiguration>
   </UserConfigurations>
 
   <Scene backgroundColor="#FF000000">
 
-    <BooleanConfiguration id="show_battery">
-    <BooleanOption id="TRUE">
+    <ListConfiguration id="show_battery">
+    <ListOption id="on">
     <!-- ===== Battery ring around the face (clockwise from 12 o'clock) ===== -->
     <Group name="battery" x="0" y="0" width="450" height="450">
       <!-- Track -->
@@ -68,23 +78,17 @@
       </Condition>
       <Variant mode="AMBIENT" target="alpha" value="110" />
     </Group>
-    </BooleanOption>
-    </BooleanConfiguration>
+    </ListOption>
+    </ListConfiguration>
 
-    <BooleanConfiguration id="show_weather">
-    <BooleanOption id="TRUE">
-    <!-- ===== Weather (icon + temperature) ===== -->
-    <!-- WEATHER.CONDITION: 0 unknown, 1 clear, 2 cloudy, 3 fog, 4 heavy rain, 5 heavy snow, 6 rain,
+    <ListConfiguration id="show_weather">
+    <ListOption id="on">
+    <!-- ===== Bottom row 2: built-in weather (icon + temperature) =====
+         WEATHER.TEMPERATURE is already in the unit set on the watch; TEMPERATURE_UNIT (1 = C, 2 = F) picks the suffix.
+         WEATHER.CONDITION: 0 unknown, 1 clear, 2 cloudy, 3 fog, 4 heavy rain, 5 heavy snow, 6 rain,
          7 snow, 8 sunny, 9 thunderstorm, 10 sleet, 11 light snow, 12 light rain, 13 mist,
          14 partly cloudy, 15 windy -->
-    <!-- Customisable slot: "Empty" (the default) shows this built-in weather;
-         picking any other provider replaces it. -->
-    <ComplicationSlot slotId="1" displayName="weather_slot" x="145" y="345" width="160" height="40" alpha="153"
-        supportedTypes="EMPTY SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE" isCustomizable="TRUE">
-      <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
-      <BoundingBox x="0" y="0" width="160" height="40" />
-      <Complication type="EMPTY">
-    <Group name="weather" x="20" y="0" width="120" height="40">
+    <Group name="weather" x="170" y="345" width="140" height="40" alpha="153">
       <Condition>
         <Expressions>
           <Expression name="noData"><![CDATA[![WEATHER.IS_AVAILABLE]]]></Expression>
@@ -99,7 +103,7 @@
 
         <!-- No weather data -->
         <Compare expression="noData">
-          <PartText x="0" y="0" width="120" height="40">
+          <PartText x="0" y="0" width="140" height="40">
             <Text align="CENTER">
               <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF5A5A5A">
                 <Template>--°</Template>
@@ -110,7 +114,7 @@
 
         <!-- Sun -->
         <Compare expression="clearDay">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <Ellipse x="12" y="12" width="16" height="16"><Fill color="#FFFFC24A" /></Ellipse>
             <Line startX="20" startY="2" endX="20" endY="7"><Stroke color="#FFFFC24A" thickness="2.5" cap="ROUND" /></Line>
             <Line startX="20" startY="33" endX="20" endY="38"><Stroke color="#FFFFC24A" thickness="2.5" cap="ROUND" /></Line>
@@ -125,7 +129,7 @@
 
         <!-- Moon (clear night) -->
         <Compare expression="clearNight">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <Ellipse x="9" y="9" width="22" height="22"><Fill color="#FFE8E4D8" /></Ellipse>
             <Ellipse x="16" y="5" width="20" height="20"><Fill color="#FF000000" /></Ellipse>
           </PartDraw>
@@ -133,7 +137,7 @@
 
         <!-- Partly cloudy -->
         <Compare expression="partly">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <Ellipse x="5" y="6" width="15" height="15"><Fill color="#FFFFC24A" /></Ellipse>
             <RoundRectangle x="9" y="21" width="29" height="12" cornerRadiusX="6" cornerRadiusY="6"><Fill color="#FFFFFFFF" /></RoundRectangle>
             <Ellipse x="14" y="12" width="15" height="15"><Fill color="#FFFFFFFF" /></Ellipse>
@@ -143,7 +147,7 @@
 
         <!-- Fog / mist -->
         <Compare expression="fog">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <Line startX="6" startY="13" endX="34" endY="13"><Stroke color="#FFB0B0B0" thickness="3" cap="ROUND" /></Line>
             <Line startX="10" startY="20" endX="30" endY="20"><Stroke color="#FFB0B0B0" thickness="3" cap="ROUND" /></Line>
             <Line startX="6" startY="27" endX="34" endY="27"><Stroke color="#FFB0B0B0" thickness="3" cap="ROUND" /></Line>
@@ -152,7 +156,7 @@
 
         <!-- Rain / sleet -->
         <Compare expression="rain">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <RoundRectangle x="4" y="13" width="32" height="13" cornerRadiusX="6.5" cornerRadiusY="6.5"><Fill color="#FFFFFFFF" /></RoundRectangle>
             <Ellipse x="10" y="3" width="17" height="17"><Fill color="#FFFFFFFF" /></Ellipse>
             <Ellipse x="20" y="8" width="13" height="13"><Fill color="#FFFFFFFF" /></Ellipse>
@@ -164,7 +168,7 @@
 
         <!-- Snow -->
         <Compare expression="snow">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <RoundRectangle x="4" y="13" width="32" height="13" cornerRadiusX="6.5" cornerRadiusY="6.5"><Fill color="#FFFFFFFF" /></RoundRectangle>
             <Ellipse x="10" y="3" width="17" height="17"><Fill color="#FFFFFFFF" /></Ellipse>
             <Ellipse x="20" y="8" width="13" height="13"><Fill color="#FFFFFFFF" /></Ellipse>
@@ -176,7 +180,7 @@
 
         <!-- Thunderstorm -->
         <Compare expression="storm">
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <RoundRectangle x="4" y="13" width="32" height="13" cornerRadiusX="6.5" cornerRadiusY="6.5"><Fill color="#FFB0B0B0" /></RoundRectangle>
             <Ellipse x="10" y="3" width="17" height="17"><Fill color="#FFB0B0B0" /></Ellipse>
             <Ellipse x="20" y="8" width="13" height="13"><Fill color="#FFB0B0B0" /></Ellipse>
@@ -188,68 +192,44 @@
 
         <!-- Cloudy / windy / unknown -->
         <Default>
-          <PartDraw x="12" y="0" width="40" height="40">
+          <PartDraw x="0" y="0" width="40" height="40">
             <RoundRectangle x="4" y="18" width="32" height="13" cornerRadiusX="6.5" cornerRadiusY="6.5"><Fill color="#FFFFFFFF" /></RoundRectangle>
             <Ellipse x="10" y="8" width="17" height="17"><Fill color="#FFFFFFFF" /></Ellipse>
             <Ellipse x="20" y="13" width="13" height="13"><Fill color="#FFFFFFFF" /></Ellipse>
           </PartDraw>
         </Default>
       </Condition>
-
-      <!-- Temperature (only when data is available) -->
       <Condition>
         <Expressions>
-          <Expression name="hasData"><![CDATA[[WEATHER.IS_AVAILABLE]]]></Expression>
+          <Expression name="celsius"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.TEMPERATURE_UNIT] == 1]]></Expression>
+          <Expression name="fahrenheit"><![CDATA[[WEATHER.IS_AVAILABLE]]]></Expression>
         </Expressions>
-        <Compare expression="hasData">
-          <PartText x="58" y="0" width="62" height="40">
+        <Compare expression="celsius">
+          <PartText x="46" y="0" width="94" height="40">
             <Text align="START">
               <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FFFFFFFF">
-                <Template>%d°<Parameter expression="[WEATHER.TEMPERATURE]" /></Template>
+                <Template>%d°C<Parameter expression="[WEATHER.TEMPERATURE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+        </Compare>
+        <Compare expression="fahrenheit">
+          <PartText x="46" y="0" width="94" height="40">
+            <Text align="START">
+              <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FFFFFFFF">
+                <Template>%d°F<Parameter expression="[WEATHER.TEMPERATURE]" /></Template>
               </Font>
             </Text>
           </PartText>
         </Compare>
       </Condition>
-    </Group>
-      </Complication>
-      <!-- Any other provider: icon + text -->
-      <Complication type="SHORT_TEXT">
-        <PartImage x="32" y="6" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="66" y="0" width="94" height="40">
-          <Text align="START" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="24" weight="NORMAL" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-      </Complication>
-      <Complication type="MONOCHROMATIC_IMAGE">
-        <PartImage x="62" y="2" width="36" height="36">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-      </Complication>
-      <Complication type="SMALL_IMAGE">
-        <PartImage x="62" y="2" width="36" height="36">
-          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
-        </PartImage>
-      </Complication>
       <Variant mode="AMBIENT" target="alpha" value="100" />
-    </ComplicationSlot>
-    </BooleanOption>
-    </BooleanConfiguration>
+    </Group>
+    </ListOption>
+    </ListConfiguration>
 
-    <!-- ===== Digital clock (follows phone 12/24h setting) ===== -->
-    <DigitalClock x="100" y="88" width="250" height="56">
-      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="0" width="250" height="56">
-        <Font family="SYNC_TO_DEVICE" size="48" weight="LIGHT" color="#FFFFFFFF" />
-      </TimeText>
-    </DigitalClock>
-
-    <BooleanConfiguration id="show_date">
-    <BooleanOption id="TRUE">
+    <ListConfiguration id="show_date">
+    <ListOption id="on">
     <!-- ===== Date, grey (e.g. "Sat 18/11") ===== -->
     <PartText x="125" y="60" width="200" height="26">
       <Text align="CENTER">
@@ -259,288 +239,394 @@
       </Text>
       <Variant mode="AMBIENT" target="alpha" value="170" />
     </PartText>
-    </BooleanOption>
-    </BooleanConfiguration>
+    </ListOption>
+    </ListConfiguration>
 
-
-    <BooleanConfiguration id="show_event">
-    <BooleanOption id="TRUE">
-    <!-- ===== Next event (calendar complication, user-customizable) ===== -->
-    <!-- Calendar icon centred on top, "time : text" centred below, at ~60 % opacity -->
-    <ComplicationSlot slotId="0" displayName="event_slot" x="85" y="290" width="280" height="46"
-        supportedTypes="LONG_TEXT SHORT_TEXT" isCustomizable="TRUE">
-      <DefaultProviderPolicy defaultSystemProvider="NEXT_EVENT" defaultSystemProviderType="LONG_TEXT" />
-      <BoundingBox x="0" y="0" width="280" height="46" />
-      <Complication type="LONG_TEXT">
-        <PartDraw x="130" y="0" width="20" height="20">
-          <RoundRectangle x="2" y="3" width="16" height="15" cornerRadiusX="3" cornerRadiusY="3">
-            <Stroke color="#99D0D0D0" thickness="1.8" />
-          </RoundRectangle>
-          <Line startX="2" startY="8" endX="18" endY="8"><Stroke color="#99D0D0D0" thickness="1.8" /></Line>
-          <Line startX="6" startY="1" endX="6" endY="5"><Stroke color="#99D0D0D0" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="14" startY="1" endX="14" endY="5"><Stroke color="#99D0D0D0" thickness="1.8" cap="ROUND" /></Line>
-        </PartDraw>
-        <PartText x="0" y="20" width="280" height="26">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#99D0D0D0">
-              <Template>%s : %s<Parameter expression="[COMPLICATION.TITLE]" /><Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-      </Complication>
+    <!-- ===== Bottom row 1: customisable widget, its own icon on top, its value below ===== -->
+    <ComplicationSlot slotId="2" displayName="slot_bottom" x="85" y="290" width="280" height="50" alpha="153"
+        supportedTypes="SHORT_TEXT LONG_TEXT RANGED_VALUE GOAL_PROGRESS" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="NEXT_EVENT" defaultSystemProviderType="SHORT_TEXT" />
+      <BoundingBox x="0" y="0" width="280" height="50" />
       <Complication type="SHORT_TEXT">
-        <PartDraw x="130" y="0" width="20" height="20">
-          <RoundRectangle x="2" y="3" width="16" height="15" cornerRadiusX="3" cornerRadiusY="3">
-            <Stroke color="#99D0D0D0" thickness="1.8" />
-          </RoundRectangle>
-          <Line startX="2" startY="8" endX="18" endY="8"><Stroke color="#99D0D0D0" thickness="1.8" /></Line>
-          <Line startX="6" startY="1" endX="6" endY="5"><Stroke color="#99D0D0D0" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="14" startY="1" endX="14" endY="5"><Stroke color="#99D0D0D0" thickness="1.8" cap="ROUND" /></Line>
-        </PartDraw>
-        <PartText x="0" y="20" width="280" height="26">
+        <PartImage x="128" y="0" width="24" height="24">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="0" y="24" width="280" height="26">
           <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#99D0D0D0">
+            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
           </Text>
         </PartText>
       </Complication>
-      <Variant mode="AMBIENT" target="alpha" value="170" />
+      <Complication type="LONG_TEXT">
+        <PartImage x="128" y="0" width="24" height="24">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="0" y="24" width="280" height="26">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="RANGED_VALUE">
+        <PartImage x="128" y="0" width="24" height="24">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="0" y="24" width="280" height="26">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="GOAL_PROGRESS">
+        <PartImage x="128" y="0" width="24" height="24">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="0" y="24" width="280" height="26">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Variant mode="AMBIENT" target="alpha" value="100" />
     </ComplicationSlot>
-    </BooleanOption>
-    </BooleanConfiguration>
 
-    <BooleanConfiguration id="show_bars">
-    <BooleanOption id="TRUE">
-    <!-- ===== Side bar complications (inside the battery ring) =====
-         RANGED_VALUE fills the bar from the bottom up; SHORT_TEXT shows icon + text only.
-         Each slot covers half the face so the arc can be drawn; the BoundingBox
-         keeps the tap area to the edge. -->
+    <!-- ===== Side rings (inside the battery ring) =====
+         Gauge style: 12 px translucent track, coloured fill (green = range, blue = goal,
+         provider colours = weighted segments), icon + bold value + title inside the arc.
+         Text sources (barometer, date, alarm...) have no track: the value is written along the
+         bezel (TextCircular), the title on a smaller curve inside, the icon in the middle.
+         Icon / image sources (timer, media, recent apps) show just the icon or image.
+         The BoundingBox also clips the drawing, so it must cover the round caps at both ends. -->
 
-    <!-- Left: arc from 230 deg (bottom) clockwise to 310 deg (top) -->
-    <ComplicationSlot slotId="2" displayName="left_slot" x="0" y="0" width="225" height="450"
-        supportedTypes="EMPTY RANGED_VALUE SHORT_TEXT" isCustomizable="TRUE">
-      <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
-      <BoundingBox x="0" y="130" width="110" height="190" />
-      <!-- Default ("Empty"): UV index from the watch weather, coloured with the WHO UV scale -->
+    <!-- Left ring: arc from 230 deg (bottom) clockwise to 310 deg (top). Default: watch battery -->
+    <ComplicationSlot slotId="0" displayName="slot_left_ring" x="0" y="0" width="225" height="450"
+        supportedTypes="EMPTY RANGED_VALUE GOAL_PROGRESS WEIGHTED_ELEMENTS SHORT_TEXT LONG_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="WATCH_BATTERY" defaultSystemProviderType="RANGED_VALUE" />
+      <BoundingBox x="0" y="70" width="125" height="310" />
       <Complication type="EMPTY">
         <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
-            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
           </Arc>
         </PartDraw>
-        <Condition>
-          <Expressions>
-            <Expression name="na"><![CDATA[![WEATHER.IS_AVAILABLE]]]></Expression>
-            <Expression name="low"><![CDATA[[WEATHER.UV_INDEX] < 3]]></Expression>
-            <Expression name="moderate"><![CDATA[[WEATHER.UV_INDEX] < 6]]></Expression>
-            <Expression name="high"><![CDATA[[WEATHER.UV_INDEX] < 8]]></Expression>
-            <Expression name="veryHigh"><![CDATA[[WEATHER.UV_INDEX] < 11]]></Expression>
-          </Expressions>
-          <Compare expression="na">
-            <PartText x="30" y="216" width="70" height="22">
-              <Text align="CENTER">
-                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FF5A5A5A"><Template>UV --</Template></Font>
-              </Text>
-            </PartText>
-          </Compare>
-          <Compare expression="low">
-            <PartDraw x="0" y="0" width="225" height="450">
-              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
-                <Stroke color="#FF4CC36A" thickness="5" cap="ROUND" />
-                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
-              </Arc>
-            </PartDraw>
-          </Compare>
-          <Compare expression="moderate">
-            <PartDraw x="0" y="0" width="225" height="450">
-              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
-                <Stroke color="#FFF2C94C" thickness="5" cap="ROUND" />
-                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
-              </Arc>
-            </PartDraw>
-          </Compare>
-          <Compare expression="high">
-            <PartDraw x="0" y="0" width="225" height="450">
-              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
-                <Stroke color="#FFFF8A3D" thickness="5" cap="ROUND" />
-                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
-              </Arc>
-            </PartDraw>
-          </Compare>
-          <Compare expression="veryHigh">
-            <PartDraw x="0" y="0" width="225" height="450">
-              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
-                <Stroke color="#FFE5484D" thickness="5" cap="ROUND" />
-                <Transform target="endAngle" value="230 + 80 * clamp([WEATHER.UV_INDEX] / 11, 0, 1)" />
-              </Arc>
-            </PartDraw>
-          </Compare>
-          <Default>
-            <PartDraw x="0" y="0" width="225" height="450">
-              <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
-                <Stroke color="#FFA672F2" thickness="5" cap="ROUND" />
-              </Arc>
-            </PartDraw>
-          </Default>
-        </Condition>
-        <!-- Sun icon -->
-        <PartDraw x="54" y="190" width="22" height="22">
-          <Ellipse x="7" y="7" width="8" height="8"><Fill color="#FFFFC24A" /></Ellipse>
-          <Line startX="11" startY="1.5" endX="11" endY="4"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="11" startY="18" endX="11" endY="20.5"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="1.5" startY="11" endX="4" endY="11"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="18" startY="11" endX="20.5" endY="11"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="4.3" startY="4.3" endX="6" endY="6"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="16" startY="16" endX="17.7" endY="17.7"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="17.7" startY="4.3" endX="16" endY="6"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-          <Line startX="6" startY="16" endX="4.3" endY="17.7"><Stroke color="#FFFFC24A" thickness="1.8" cap="ROUND" /></Line>
-        </PartDraw>
-        <Condition>
-          <Expressions>
-            <Expression name="ok"><![CDATA[[WEATHER.IS_AVAILABLE]]]></Expression>
-          </Expressions>
-          <Compare expression="ok">
-            <PartText x="30" y="216" width="70" height="22">
-              <Text align="CENTER">
-                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
-                  <Template>UV %d<Parameter expression="[WEATHER.UV_INDEX]" /></Template>
-                </Font>
-              </Text>
-            </PartText>
-          </Compare>
-        </Condition>
       </Complication>
       <Complication type="RANGED_VALUE">
         <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
-            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
           </Arc>
-          <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="230">
-            <Stroke color="#FFB0B0B0" thickness="5" cap="ROUND" />
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="230">
+            <Stroke color="#FF00E676" thickness="12" cap="ROUND" />
             <Transform target="endAngle" value="230 + 80 * clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / clamp([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN], 0.0001, 1000000000), 0, 1)" />
           </Arc>
         </PartDraw>
-        <PartImage x="54" y="192" width="22" height="22">
+        <PartImage x="68" y="180" width="28" height="28">
           <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
         </PartImage>
-        <PartText x="30" y="216" width="70" height="22">
+        <PartText x="42" y="208" width="80" height="28">
           <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="42" y="236" width="80" height="20">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="GOAL_PROGRESS">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="230">
+            <Stroke color="#FF29B6F6" thickness="12" cap="ROUND" />
+            <Transform target="endAngle" value="230 + 80 * clamp([COMPLICATION.GOAL_PROGRESS_VALUE] / clamp([COMPLICATION.GOAL_PROGRESS_TARGET_VALUE], 0.0001, 1000000000), 0, 1)" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="68" y="180" width="28" height="28">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="42" y="208" width="80" height="28">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="42" y="236" width="80" height="20">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="WEIGHTED_ELEMENTS">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <WeightedStroke colors="[COMPLICATION.WEIGHTED_ELEMENTS_COLORS]" weights="[COMPLICATION.WEIGHTED_ELEMENTS_WEIGHTS]"
+                thickness="12" discreteGap="3" interpolate="false" cap="BUTT" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="68" y="180" width="28" height="28">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="42" y="208" width="80" height="28">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="42" y="236" width="80" height="20">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
             </Font>
           </Text>
         </PartText>
       </Complication>
       <Complication type="SHORT_TEXT">
-        <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="225" centerY="225" width="408" height="408" startAngle="230" endAngle="310">
-            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
-          </Arc>
-        </PartDraw>
-        <PartImage x="54" y="192" width="22" height="22">
+        <PartImage x="68" y="197" width="28" height="28">
           <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
         </PartImage>
-        <PartText x="30" y="216" width="70" height="22">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="225" centerY="225" width="382" height="382" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
-          </Text>
+          </TextCircular>
         </PartText>
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="225" centerY="225" width="340" height="340" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </TextCircular>
+        </PartText>
+      </Complication>
+      <Complication type="LONG_TEXT">
+        <PartImage x="68" y="197" width="28" height="28">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="225" centerY="225" width="382" height="382" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </TextCircular>
+        </PartText>
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="225" centerY="225" width="340" height="340" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </TextCircular>
+        </PartText>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="64" y="202" width="36" height="36">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="SMALL_IMAGE">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="60" y="198" width="44" height="44">
+          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+        </PartImage>
       </Complication>
       <Variant mode="AMBIENT" target="alpha" value="110" />
     </ComplicationSlot>
 
-    <!-- Right: arc from 130 deg (bottom) counter-clockwise to 50 deg (top) -->
-    <ComplicationSlot slotId="3" displayName="right_slot" x="225" y="0" width="225" height="450"
-        supportedTypes="EMPTY RANGED_VALUE SHORT_TEXT" isCustomizable="TRUE">
-      <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
-      <BoundingBox x="115" y="130" width="110" height="190" />
-      <!-- Default ("Empty"): chance of rain from the watch weather -->
+    <!-- Right ring: arc from 130 deg (bottom) counter-clockwise to 50 deg (top). Default: step goal -->
+    <ComplicationSlot slotId="1" displayName="slot_right_ring" x="225" y="0" width="225" height="450"
+        supportedTypes="EMPTY RANGED_VALUE GOAL_PROGRESS WEIGHTED_ELEMENTS SHORT_TEXT LONG_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="GOAL_PROGRESS" />
+      <BoundingBox x="100" y="70" width="125" height="310" />
       <Complication type="EMPTY">
         <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
-            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
           </Arc>
         </PartDraw>
-        <!-- Rain drop icon -->
-        <PartDraw x="149" y="190" width="22" height="22">
-          <Ellipse x="5.5" y="8" width="11" height="11"><Fill color="#FF4FA3FF" /></Ellipse>
-          <Line startX="11" startY="2" endX="6.2" endY="11"><Stroke color="#FF4FA3FF" thickness="2" cap="ROUND" /></Line>
-          <Line startX="11" startY="2" endX="15.8" endY="11"><Stroke color="#FF4FA3FF" thickness="2" cap="ROUND" /></Line>
-          <Line startX="11" startY="3" endX="11" endY="10"><Stroke color="#FF4FA3FF" thickness="5" cap="ROUND" /></Line>
-        </PartDraw>
-        <Condition>
-          <Expressions>
-            <Expression name="ok"><![CDATA[[WEATHER.IS_AVAILABLE]]]></Expression>
-          </Expressions>
-          <Compare expression="ok">
-            <PartDraw x="0" y="0" width="225" height="450">
-              <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="130" direction="COUNTER_CLOCKWISE">
-                <Stroke color="#FF4FA3FF" thickness="5" cap="ROUND" />
-                <Transform target="endAngle" value="130 - 80 * clamp([WEATHER.CHANCE_OF_PRECIPITATION] / 100, 0, 1)" />
-              </Arc>
-            </PartDraw>
-            <PartText x="125" y="216" width="70" height="22">
-              <Text align="CENTER">
-                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
-                  <Template>%d%%<Parameter expression="[WEATHER.CHANCE_OF_PRECIPITATION]" /></Template>
-                </Font>
-              </Text>
-            </PartText>
-          </Compare>
-          <Default>
-            <PartText x="125" y="216" width="70" height="22">
-              <Text align="CENTER">
-                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FF5A5A5A"><Template>--</Template></Font>
-              </Text>
-            </PartText>
-          </Default>
-        </Condition>
       </Complication>
       <Complication type="RANGED_VALUE">
         <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
-            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
           </Arc>
-          <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="130" direction="COUNTER_CLOCKWISE">
-            <Stroke color="#FFB0B0B0" thickness="5" cap="ROUND" />
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="130" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#FF00E676" thickness="12" cap="ROUND" />
             <Transform target="endAngle" value="130 - 80 * clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / clamp([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN], 0.0001, 1000000000), 0, 1)" />
           </Arc>
         </PartDraw>
-        <PartImage x="149" y="192" width="22" height="22">
+        <PartImage x="129" y="180" width="28" height="28">
           <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
         </PartImage>
-        <PartText x="125" y="216" width="70" height="22">
+        <PartText x="103" y="208" width="80" height="28">
           <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="103" y="236" width="80" height="20">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="GOAL_PROGRESS">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="130" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#FF29B6F6" thickness="12" cap="ROUND" />
+            <Transform target="endAngle" value="130 - 80 * clamp([COMPLICATION.GOAL_PROGRESS_VALUE] / clamp([COMPLICATION.GOAL_PROGRESS_TARGET_VALUE], 0.0001, 1000000000), 0, 1)" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="129" y="180" width="28" height="28">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="103" y="208" width="80" height="28">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="103" y="236" width="80" height="20">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="WEIGHTED_ELEMENTS">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <WeightedStroke colors="[COMPLICATION.WEIGHTED_ELEMENTS_COLORS]" weights="[COMPLICATION.WEIGHTED_ELEMENTS_WEIGHTS]"
+                thickness="12" discreteGap="3" interpolate="false" cap="BUTT" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="129" y="180" width="28" height="28">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="103" y="208" width="80" height="28">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="103" y="236" width="80" height="20">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
             </Font>
           </Text>
         </PartText>
       </Complication>
       <Complication type="SHORT_TEXT">
-        <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="0" centerY="225" width="408" height="408" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
-            <Stroke color="#FF262626" thickness="5" cap="ROUND" />
-          </Arc>
-        </PartDraw>
-        <PartImage x="149" y="192" width="22" height="22">
+        <PartImage x="129" y="197" width="28" height="28">
           <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
         </PartImage>
-        <PartText x="125" y="216" width="70" height="22">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="#FFB0B0B0">
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="0" centerY="225" width="382" height="382" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
-          </Text>
+          </TextCircular>
         </PartText>
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="0" centerY="225" width="340" height="340" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </TextCircular>
+        </PartText>
+      </Complication>
+      <Complication type="LONG_TEXT">
+        <PartImage x="129" y="197" width="28" height="28">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="0" centerY="225" width="382" height="382" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </TextCircular>
+        </PartText>
+        <PartText x="0" y="0" width="225" height="450">
+          <TextCircular centerX="0" centerY="225" width="340" height="340" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
+              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </TextCircular>
+        </PartText>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="125" y="202" width="36" height="36">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="SMALL_IMAGE">
+        <PartDraw x="0" y="0" width="225" height="450">
+          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
+            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
+          </Arc>
+        </PartDraw>
+        <PartImage x="121" y="198" width="44" height="44">
+          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+        </PartImage>
       </Complication>
       <Variant mode="AMBIENT" target="alpha" value="110" />
     </ComplicationSlot>
-    </BooleanOption>
-    </BooleanConfiguration>
+
+    <!-- ===== Digital clock (follows phone 12/24h setting) =====
+         Drawn after every widget so it sits on top of them, but before the hands. -->
+    <DigitalClock x="100" y="88" width="250" height="56">
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="0" width="250" height="56">
+        <Font family="SYNC_TO_DEVICE" size="48" weight="LIGHT" color="#FFFFFFFF" />
+      </TimeText>
+    </DigitalClock>
 
     <!-- ===== Analog hands ===== -->
     <!-- Hour -->
@@ -554,15 +640,15 @@
       <Transform target="angle" value="[MINUTE_SECOND] * 6" />
     </PartDraw>
     <!-- Second (hidden in always-on mode) -->
-    <BooleanConfiguration id="show_seconds">
-    <BooleanOption id="TRUE">
+    <ListConfiguration id="show_seconds">
+    <ListOption id="on">
     <PartDraw x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
       <Line startX="225" startY="252" endX="225" endY="40"><Stroke color="[CONFIGURATION.accent]" thickness="2" cap="ROUND" /></Line>
       <Transform target="angle" value="[SECOND] * 6" />
       <Variant mode="AMBIENT" target="alpha" value="0" />
     </PartDraw>
-    </BooleanOption>
-    </BooleanConfiguration>
+    </ListOption>
+    </ListConfiguration>
     <!-- Center cap -->
     <PartDraw x="215" y="215" width="20" height="20">
       <Ellipse x="2" y="2" width="16" height="16"><Fill color="[CONFIGURATION.accent]" /></Ellipse>

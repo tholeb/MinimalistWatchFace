@@ -26,21 +26,23 @@ The screenshots are drawn mock-ups, not captures from a watch.
 
 | Widget | Default | Changeable to |
 |---|---|---|
-| **Left bar** | UV index from the watch's weather. Fills from the bottom; colour follows the UV scale: green 0–2, yellow 3–5, orange 6–7, red 8–10, violet 11+ | Any source with a value or text (steps, floors, a goal…) |
-| **Right bar** | Chance of rain (%) from the watch's weather | Any source with a value or text (heart rate, battery…) |
-| **Weather** | Icon (sun, moon, cloud, rain, snow, storm, fog) + temperature | Any short-text or icon source |
-| **Event** | Next calendar event: `time : title` | Any short or long text source |
+| **Left ring** | Watch battery: green arc filling from the bottom, icon + value inside | Any widget: gauges (battery, UV, rain, steps goal…), text (barometer, date, alarm, world clock…), icons and images (timer, media, recent apps) |
+| **Right ring** | Daily step goal: blue arc, icon + value inside | Same as the left ring |
+| **Bottom widget** (row 1) | Next calendar event: its icon above, its value below | Any widget with a text value (heart rate, sunrise, steps…), shown with its own icon |
+| **Weather** (row 2) | Icon (sun, moon, cloud, rain, snow, storm, fog) + temperature, in °C or °F following the watch's settings | On / off |
 | Battery ring | Charge level around the edge, orange when low | On / off |
 | Date | Grey, e.g. `Wed 18/11` | On / off |
 | Digital + analog time | Digital follows the phone's 12/24 h setting | Hands colour, seconds on / off |
 
 ## Customise it on the watch
 
+The Customise screen is in English or French, following the watch's language.
+
 1. Long-press the watch face, then tap **Customise**.
 2. Swipe between the pages:
    - **Colour**: **Accent colour** (seconds hand and centre dot: orange, red, yellow, green, blue, violet, pink, white) and **Hands colour** (grey, white, dark grey).
-   - **Show / hide**: turn **Side bars**, **Weather**, **Event**, **Battery ring**, **Date** and **Seconds hand** on or off.
-   - **Complications**: tap **Left bar**, **Right bar**, **Weather** or **Event** to pick another source. Choose **Empty** to go back to the built-in UV, rain or weather display.
+   - **Show / hide**: set **Weather**, **Battery ring**, **Date** and **Seconds hand** to **Show** or **Hide**.
+   - **Complications**: tap a widget to pick one from the watch or any installed app. The rings (**Left ring**, **Right ring**) take any widget: gauges fill the arc (green for a range, blue for a goal, the widget's own colours for segments); text, icon and image widgets show inside the ring over an empty arc. **Bottom widget** is under the clock and shows the chosen widget's icon and value.
 
 You can do the same from the phone in the **Galaxy Wearable** app under **Watch faces → Customise**.
 

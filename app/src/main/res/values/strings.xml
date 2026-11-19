@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Minimal Hybrid</string>
-    <string name="event_slot">Event</string>
-    <string name="weather_slot">Weather</string>
-    <string name="left_slot">Left bar</string>
-    <string name="right_slot">Right bar</string>
-
-    <!-- Customise screen -->
+    <string name="slot_left_ring">Left ring</string>
+    <string name="slot_right_ring">Right ring</string>
+    <string name="slot_bottom">Bottom widget</string>
     <string name="cfg_accent">Accent colour</string>
     <string name="cfg_hands">Hands colour</string>
-    <string name="cfg_show_bars">Side bars</string>
     <string name="cfg_show_weather">Weather</string>
-    <string name="cfg_show_event">Event</string>
     <string name="cfg_show_battery">Battery ring</string>
     <string name="cfg_show_date">Date</string>
     <string name="cfg_show_seconds">Seconds hand</string>
-
+    <string name="opt_show">Show</string>
+    <string name="opt_hide">Hide</string>
     <string name="color_orange">Orange</string>
     <string name="color_red">Red</string>
     <string name="color_yellow">Yellow</string>

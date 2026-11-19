@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="slot_left_ring">Anneau gauche</string>
+    <string name="slot_right_ring">Anneau droit</string>
+    <string name="slot_bottom">Widget bas</string>
+    <string name="cfg_accent">Couleur d\'accent</string>
+    <string name="cfg_hands">Couleur des aiguilles</string>
+    <string name="cfg_show_weather">Météo</string>
+    <string name="cfg_show_battery">Anneau de batterie</string>
+    <string name="cfg_show_date">Date</string>
+    <string name="cfg_show_seconds">Trotteuse</string>
+    <string name="opt_show">Afficher</string>
+    <string name="opt_hide">Masquer</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_red">Rouge</string>
+    <string name="color_yellow">Jaune</string>
+    <string name="color_green">Vert</string>
+    <string name="color_blue">Bleu</string>
+    <string name="color_violet">Violet</string>
+    <string name="color_pink">Rose</string>
+    <string name="color_white">Blanc</string>
+    <string name="color_grey">Gris</string>
+    <string name="color_dark_grey">Gris foncé</string>
+</resources>
