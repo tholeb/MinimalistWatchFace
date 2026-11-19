@@ -7,6 +7,8 @@
   <Metadata key="CLOCK_TYPE" value="ANALOG" />
   <Metadata key="PREVIEW_TIME" value="10:08:32" />
 
+  <!-- Always-on display: only the clocks (digital + hands, no seconds) and the battery ring are shown,
+       dimmed to alpha 130; widgets, weather and date are hidden. -->
   <!-- ===== Options in the watch's Customise screen ===== -->
   <UserConfigurations>
     <ColorConfiguration id="accent" displayName="cfg_accent" defaultValue="orange">
@@ -76,7 +78,8 @@
           </PartDraw>
         </Default>
       </Condition>
-      <Variant mode="AMBIENT" target="alpha" value="110" />
+      <!-- Always-on: dimmed -->
+      <Variant mode="AMBIENT" target="alpha" value="130" />
     </Group>
     </ListOption>
     </ListConfiguration>
@@ -223,7 +226,8 @@
           </PartText>
         </Compare>
       </Condition>
-      <Variant mode="AMBIENT" target="alpha" value="100" />
+      <!-- Always-on: hidden -->
+      <Variant mode="AMBIENT" target="alpha" value="0" />
     </Group>
     </ListOption>
     </ListConfiguration>
@@ -237,78 +241,123 @@
           <Template>%s %s/%s<Parameter expression="[DAY_OF_WEEK_S]" /><Parameter expression="[DAY_Z]" /><Parameter expression="[MONTH_Z]" /></Template>
         </Font>
       </Text>
-      <Variant mode="AMBIENT" target="alpha" value="170" />
+      <!-- Always-on: hidden -->
+      <Variant mode="AMBIENT" target="alpha" value="0" />
     </PartText>
     </ListOption>
     </ListConfiguration>
 
-    <!-- ===== Bottom row 1: customisable widget, its own icon on top, its value below ===== -->
+    <!-- ===== Bottom row 1: customisable widget, its own icon and its value on one row, centred ===== -->
     <ComplicationSlot slotId="2" displayName="slot_bottom" x="85" y="290" width="280" height="50" alpha="153"
         supportedTypes="SHORT_TEXT LONG_TEXT RANGED_VALUE GOAL_PROGRESS" isCustomizable="TRUE">
       <DefaultProviderPolicy defaultSystemProvider="NEXT_EVENT" defaultSystemProviderType="SHORT_TEXT" />
       <BoundingBox x="0" y="0" width="280" height="50" />
       <Complication type="SHORT_TEXT">
-        <PartImage x="128" y="0" width="24" height="24">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="0" y="24" width="280" height="26">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon + value centred as one group (text width estimated from its length, ~9 px per char) -->
+        <Group name="row" x="0" y="0" width="280" height="50">
+          <PartImage x="0" y="13" width="24" height="24">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="30" y="12" width="250" height="26">
+            <Text align="START" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="x" value="(280 - (30 + clamp(textLength([COMPLICATION.TEXT]) * 9, 0, 250))) / 2" />
+        </Group>
       </Complication>
       <Complication type="LONG_TEXT">
-        <PartImage x="128" y="0" width="24" height="24">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="0" y="24" width="280" height="26">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon + value centred as one group (text width estimated from its length, ~9 px per char) -->
+        <Group name="row" x="0" y="0" width="280" height="50">
+          <PartImage x="0" y="13" width="24" height="24">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="30" y="12" width="250" height="26">
+            <Text align="START" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="x" value="(280 - (30 + clamp(textLength([COMPLICATION.TEXT]) * 9, 0, 250))) / 2" />
+        </Group>
       </Complication>
       <Complication type="RANGED_VALUE">
-        <PartImage x="128" y="0" width="24" height="24">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="0" y="24" width="280" height="26">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon + value centred as one group (text width estimated from its length, ~9 px per char) -->
+        <Group name="row" x="0" y="0" width="280" height="50">
+          <PartImage x="0" y="13" width="24" height="24">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <!-- Some providers (e.g. Samsung rain) send only the number, no text: show the value instead -->
+          <Condition>
+            <Expressions>
+              <Expression name="pct"><![CDATA[[COMPLICATION.TEXT] == "" && [COMPLICATION.RANGED_VALUE_MIN] == 0 && [COMPLICATION.RANGED_VALUE_MAX] == 100]]></Expression>
+              <Expression name="noText"><![CDATA[[COMPLICATION.TEXT] == ""]]></Expression>
+            </Expressions>
+            <Compare expression="pct">
+              <PartText x="30" y="12" width="250" height="26">
+                <Text align="START" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+                    <Template>%d %%<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Compare>
+            <Compare expression="noText">
+              <PartText x="30" y="12" width="250" height="26">
+                <Text align="START" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+                    <Template>%d<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Compare>
+            <Default>
+              <PartText x="30" y="12" width="250" height="26">
+                <Text align="START" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+                    <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Default>
+          </Condition>
+          <Transform target="x" value="(280 - (30 + clamp((textLength([COMPLICATION.TEXT]) == 0 ? 4 : textLength([COMPLICATION.TEXT])) * 9, 0, 250))) / 2" />
+        </Group>
       </Complication>
       <Complication type="GOAL_PROGRESS">
-        <PartImage x="128" y="0" width="24" height="24">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="0" y="24" width="280" height="26">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon + value centred as one group (text width estimated from its length, ~9 px per char) -->
+        <Group name="row" x="0" y="0" width="280" height="50">
+          <PartImage x="0" y="13" width="24" height="24">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="30" y="12" width="250" height="26">
+            <Text align="START" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="#FFD0D0D0">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="x" value="(280 - (30 + clamp(textLength([COMPLICATION.TEXT]) * 9, 0, 250))) / 2" />
+        </Group>
       </Complication>
-      <Variant mode="AMBIENT" target="alpha" value="100" />
+      <!-- Always-on: hidden -->
+      <Variant mode="AMBIENT" target="alpha" value="0" />
     </ComplicationSlot>
 
     <!-- ===== Side rings (inside the battery ring) =====
          Gauge style: 12 px translucent track, coloured fill (green = range, blue = goal,
          provider colours = weighted segments), icon + bold value + title inside the arc.
-         Text sources (barometer, date, alarm...) have no track: the value is written along the
-         bezel (TextCircular), the title on a smaller curve inside, the icon in the middle.
-         Icon / image sources (timer, media, recent apps) show just the icon or image.
+         Text sources (barometer, date, alarm...) have no track: icon + value are centred along the
+         bezel (TextCircular, icon rotated to follow it), the title on a smaller curve inside.
+         Only bezel-friendly sources are offered: gauges, progress and curved text (no icon/image-only widgets).
          The BoundingBox also clips the drawing, so it must cover the round caps at both ends. -->
 
     <!-- Left ring: arc from 230 deg (bottom) clockwise to 310 deg (top). Default: watch battery -->
     <ComplicationSlot slotId="0" displayName="slot_left_ring" x="0" y="0" width="225" height="450"
-        supportedTypes="EMPTY RANGED_VALUE GOAL_PROGRESS WEIGHTED_ELEMENTS SHORT_TEXT LONG_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE" isCustomizable="TRUE">
+        supportedTypes="EMPTY RANGED_VALUE GOAL_PROGRESS WEIGHTED_ELEMENTS SHORT_TEXT LONG_TEXT" isCustomizable="TRUE">
       <DefaultProviderPolicy defaultSystemProvider="WATCH_BATTERY" defaultSystemProviderType="RANGED_VALUE" />
       <BoundingBox x="0" y="70" width="125" height="310" />
       <Complication type="EMPTY">
@@ -328,23 +377,54 @@
             <Transform target="endAngle" value="230 + 80 * clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / clamp([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN], 0.0001, 1000000000), 0, 1)" />
           </Arc>
         </PartDraw>
-        <PartImage x="68" y="180" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="42" y="208" width="80" height="28">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-        <PartText x="42" y="236" width="80" height="20">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon / value / title centred vertically on the face; moved down when there is no title -->
+        <Group name="stack" x="0" y="0" width="225" height="450">
+          <PartImage x="68" y="187" width="28" height="28">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <!-- Some providers (e.g. Samsung rain) send only the number, no text: show the value instead -->
+          <Condition>
+            <Expressions>
+              <Expression name="pct"><![CDATA[[COMPLICATION.TEXT] == "" && [COMPLICATION.RANGED_VALUE_MIN] == 0 && [COMPLICATION.RANGED_VALUE_MAX] == 100]]></Expression>
+              <Expression name="noText"><![CDATA[[COMPLICATION.TEXT] == ""]]></Expression>
+            </Expressions>
+            <Compare expression="pct">
+              <PartText x="42" y="215" width="80" height="28">
+                <Text align="CENTER" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                    <Template>%d %%<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Compare>
+            <Compare expression="noText">
+              <PartText x="42" y="215" width="80" height="28">
+                <Text align="CENTER" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                    <Template>%d<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Compare>
+            <Default>
+              <PartText x="42" y="215" width="80" height="28">
+                <Text align="CENTER" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                    <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Default>
+          </Condition>
+          <PartText x="42" y="243" width="80" height="20">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="y" value="textLength([COMPLICATION.TITLE]) == 0 ? 10 : 0" />
+        </Group>
       </Complication>
       <Complication type="GOAL_PROGRESS">
         <PartDraw x="0" y="0" width="225" height="450">
@@ -356,23 +436,27 @@
             <Transform target="endAngle" value="230 + 80 * clamp([COMPLICATION.GOAL_PROGRESS_VALUE] / clamp([COMPLICATION.GOAL_PROGRESS_TARGET_VALUE], 0.0001, 1000000000), 0, 1)" />
           </Arc>
         </PartDraw>
-        <PartImage x="68" y="180" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="42" y="208" width="80" height="28">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-        <PartText x="42" y="236" width="80" height="20">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon / value / title centred vertically on the face; moved down when there is no title -->
+        <Group name="stack" x="0" y="0" width="225" height="450">
+          <PartImage x="68" y="187" width="28" height="28">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="42" y="215" width="80" height="28">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartText x="42" y="243" width="80" height="20">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="y" value="textLength([COMPLICATION.TITLE]) == 0 ? 10 : 0" />
+        </Group>
       </Complication>
       <Complication type="WEIGHTED_ELEMENTS">
         <PartDraw x="0" y="0" width="225" height="450">
@@ -384,37 +468,46 @@
                 thickness="12" discreteGap="3" interpolate="false" cap="BUTT" />
           </Arc>
         </PartDraw>
-        <PartImage x="68" y="180" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="42" y="208" width="80" height="28">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-        <PartText x="42" y="236" width="80" height="20">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon / value / title centred vertically on the face; moved down when there is no title -->
+        <Group name="stack" x="0" y="0" width="225" height="450">
+          <PartImage x="68" y="187" width="28" height="28">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="42" y="215" width="80" height="28">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartText x="42" y="243" width="80" height="20">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="y" value="textLength([COMPLICATION.TITLE]) == 0 ? 10 : 0" />
+        </Group>
       </Complication>
       <Complication type="SHORT_TEXT">
-        <PartImage x="68" y="197" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
+        <!-- Icon + value centred on the arc. The value is centred, shifted by half the icon width;
+             the icon is rotated around the face centre to sit just before it (width estimated from length). -->
+        <Group name="ring_icon" x="0" y="0" width="225" height="450" pivotX="1.0" pivotY="0.5">
+          <PartImage x="23" y="214" width="22" height="22" angle="270">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <Transform target="angle" value="0 - (1.5 + clamp(textLength([COMPLICATION.TEXT]) * 3.3, 0, 72)) / 2" />
+        </Group>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="225" centerY="225" width="382" height="382" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="225" centerY="225" width="382" height="382" startAngle="234" endAngle="314" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
           </TextCircular>
         </PartText>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="225" centerY="225" width="340" height="340" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="225" centerY="225" width="340" height="340" startAngle="234" endAngle="314" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
             </Font>
@@ -422,50 +515,36 @@
         </PartText>
       </Complication>
       <Complication type="LONG_TEXT">
-        <PartImage x="68" y="197" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
+        <!-- Icon + value centred on the arc. The value is centred, shifted by half the icon width;
+             the icon is rotated around the face centre to sit just before it (width estimated from length). -->
+        <Group name="ring_icon" x="0" y="0" width="225" height="450" pivotX="1.0" pivotY="0.5">
+          <PartImage x="23" y="214" width="22" height="22" angle="270">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <Transform target="angle" value="0 - (1.5 + clamp(textLength([COMPLICATION.TEXT]) * 3.3, 0, 72)) / 2" />
+        </Group>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="225" centerY="225" width="382" height="382" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="225" centerY="225" width="382" height="382" startAngle="234" endAngle="314" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
           </TextCircular>
         </PartText>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="225" centerY="225" width="340" height="340" startAngle="230" endAngle="310" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="225" centerY="225" width="340" height="340" startAngle="234" endAngle="314" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
             </Font>
           </TextCircular>
         </PartText>
       </Complication>
-      <Complication type="MONOCHROMATIC_IMAGE">
-        <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
-            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
-          </Arc>
-        </PartDraw>
-        <PartImage x="64" y="202" width="36" height="36">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-      </Complication>
-      <Complication type="SMALL_IMAGE">
-        <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="225" centerY="225" width="404" height="404" startAngle="230" endAngle="310">
-            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
-          </Arc>
-        </PartDraw>
-        <PartImage x="60" y="198" width="44" height="44">
-          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
-        </PartImage>
-      </Complication>
-      <Variant mode="AMBIENT" target="alpha" value="110" />
+      <!-- Always-on: hidden -->
+      <Variant mode="AMBIENT" target="alpha" value="0" />
     </ComplicationSlot>
 
     <!-- Right ring: arc from 130 deg (bottom) counter-clockwise to 50 deg (top). Default: step goal -->
     <ComplicationSlot slotId="1" displayName="slot_right_ring" x="225" y="0" width="225" height="450"
-        supportedTypes="EMPTY RANGED_VALUE GOAL_PROGRESS WEIGHTED_ELEMENTS SHORT_TEXT LONG_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE" isCustomizable="TRUE">
+        supportedTypes="EMPTY RANGED_VALUE GOAL_PROGRESS WEIGHTED_ELEMENTS SHORT_TEXT LONG_TEXT" isCustomizable="TRUE">
       <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="GOAL_PROGRESS" />
       <BoundingBox x="100" y="70" width="125" height="310" />
       <Complication type="EMPTY">
@@ -485,23 +564,54 @@
             <Transform target="endAngle" value="130 - 80 * clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / clamp([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN], 0.0001, 1000000000), 0, 1)" />
           </Arc>
         </PartDraw>
-        <PartImage x="129" y="180" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="103" y="208" width="80" height="28">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-        <PartText x="103" y="236" width="80" height="20">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon / value / title centred vertically on the face; moved down when there is no title -->
+        <Group name="stack" x="0" y="0" width="225" height="450">
+          <PartImage x="129" y="187" width="28" height="28">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <!-- Some providers (e.g. Samsung rain) send only the number, no text: show the value instead -->
+          <Condition>
+            <Expressions>
+              <Expression name="pct"><![CDATA[[COMPLICATION.TEXT] == "" && [COMPLICATION.RANGED_VALUE_MIN] == 0 && [COMPLICATION.RANGED_VALUE_MAX] == 100]]></Expression>
+              <Expression name="noText"><![CDATA[[COMPLICATION.TEXT] == ""]]></Expression>
+            </Expressions>
+            <Compare expression="pct">
+              <PartText x="103" y="215" width="80" height="28">
+                <Text align="CENTER" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                    <Template>%d %%<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Compare>
+            <Compare expression="noText">
+              <PartText x="103" y="215" width="80" height="28">
+                <Text align="CENTER" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                    <Template>%d<Parameter expression="round([COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Compare>
+            <Default>
+              <PartText x="103" y="215" width="80" height="28">
+                <Text align="CENTER" ellipsis="TRUE">
+                  <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                    <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                  </Font>
+                </Text>
+              </PartText>
+            </Default>
+          </Condition>
+          <PartText x="103" y="243" width="80" height="20">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="y" value="textLength([COMPLICATION.TITLE]) == 0 ? 10 : 0" />
+        </Group>
       </Complication>
       <Complication type="GOAL_PROGRESS">
         <PartDraw x="0" y="0" width="225" height="450">
@@ -513,23 +623,27 @@
             <Transform target="endAngle" value="130 - 80 * clamp([COMPLICATION.GOAL_PROGRESS_VALUE] / clamp([COMPLICATION.GOAL_PROGRESS_TARGET_VALUE], 0.0001, 1000000000), 0, 1)" />
           </Arc>
         </PartDraw>
-        <PartImage x="129" y="180" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="103" y="208" width="80" height="28">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-        <PartText x="103" y="236" width="80" height="20">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon / value / title centred vertically on the face; moved down when there is no title -->
+        <Group name="stack" x="0" y="0" width="225" height="450">
+          <PartImage x="129" y="187" width="28" height="28">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="103" y="215" width="80" height="28">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartText x="103" y="243" width="80" height="20">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="y" value="textLength([COMPLICATION.TITLE]) == 0 ? 10 : 0" />
+        </Group>
       </Complication>
       <Complication type="WEIGHTED_ELEMENTS">
         <PartDraw x="0" y="0" width="225" height="450">
@@ -541,37 +655,46 @@
                 thickness="12" discreteGap="3" interpolate="false" cap="BUTT" />
           </Arc>
         </PartDraw>
-        <PartImage x="129" y="180" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-        <PartText x="103" y="208" width="80" height="28">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
-        <PartText x="103" y="236" width="80" height="20">
-          <Text align="CENTER" ellipsis="TRUE">
-            <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
-              <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
-            </Font>
-          </Text>
-        </PartText>
+        <!-- Icon / value / title centred vertically on the face; moved down when there is no title -->
+        <Group name="stack" x="0" y="0" width="225" height="450">
+          <PartImage x="129" y="187" width="28" height="28">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <PartText x="103" y="215" width="80" height="28">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartText x="103" y="243" width="80" height="20">
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="13" weight="NORMAL" color="#B3FFFFFF">
+                <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <Transform target="y" value="textLength([COMPLICATION.TITLE]) == 0 ? 10 : 0" />
+        </Group>
       </Complication>
       <Complication type="SHORT_TEXT">
-        <PartImage x="129" y="197" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
+        <!-- Icon + value centred on the arc. The value is centred, shifted by half the icon width;
+             the icon is rotated around the face centre to sit just before it (width estimated from length). -->
+        <Group name="ring_icon" x="0" y="0" width="225" height="450" pivotX="0.0" pivotY="0.5">
+          <PartImage x="180" y="214" width="22" height="22" angle="90">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <Transform target="angle" value="0 - (1.5 + clamp(textLength([COMPLICATION.TEXT]) * 3.3, 0, 72)) / 2" />
+        </Group>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="0" centerY="225" width="382" height="382" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="0" centerY="225" width="382" height="382" startAngle="54" endAngle="134" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
           </TextCircular>
         </PartText>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="0" centerY="225" width="340" height="340" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="0" centerY="225" width="340" height="340" startAngle="54" endAngle="134" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
             </Font>
@@ -579,45 +702,31 @@
         </PartText>
       </Complication>
       <Complication type="LONG_TEXT">
-        <PartImage x="129" y="197" width="28" height="28">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
+        <!-- Icon + value centred on the arc. The value is centred, shifted by half the icon width;
+             the icon is rotated around the face centre to sit just before it (width estimated from length). -->
+        <Group name="ring_icon" x="0" y="0" width="225" height="450" pivotX="0.0" pivotY="0.5">
+          <PartImage x="180" y="214" width="22" height="22" angle="90">
+            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+          </PartImage>
+          <Transform target="angle" value="0 - (1.5 + clamp(textLength([COMPLICATION.TEXT]) * 3.3, 0, 72)) / 2" />
+        </Group>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="0" centerY="225" width="382" height="382" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="0" centerY="225" width="382" height="382" startAngle="54" endAngle="134" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="20" weight="BOLD" color="#FFFFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
             </Font>
           </TextCircular>
         </PartText>
         <PartText x="0" y="0" width="225" height="450">
-          <TextCircular centerX="0" centerY="225" width="340" height="340" startAngle="50" endAngle="130" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
+          <TextCircular centerX="0" centerY="225" width="340" height="340" startAngle="54" endAngle="134" direction="CLOCKWISE" align="CENTER" ellipsis="TRUE">
             <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#B3FFFFFF">
               <Template>%s<Parameter expression="[COMPLICATION.TITLE]" /></Template>
             </Font>
           </TextCircular>
         </PartText>
       </Complication>
-      <Complication type="MONOCHROMATIC_IMAGE">
-        <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
-            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
-          </Arc>
-        </PartDraw>
-        <PartImage x="125" y="202" width="36" height="36">
-          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
-        </PartImage>
-      </Complication>
-      <Complication type="SMALL_IMAGE">
-        <PartDraw x="0" y="0" width="225" height="450">
-          <Arc centerX="0" centerY="225" width="404" height="404" startAngle="130" endAngle="50" direction="COUNTER_CLOCKWISE">
-            <Stroke color="#33FFFFFF" thickness="12" cap="ROUND" />
-          </Arc>
-        </PartDraw>
-        <PartImage x="121" y="198" width="44" height="44">
-          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
-        </PartImage>
-      </Complication>
-      <Variant mode="AMBIENT" target="alpha" value="110" />
+      <!-- Always-on: hidden -->
+      <Variant mode="AMBIENT" target="alpha" value="0" />
     </ComplicationSlot>
 
     <!-- ===== Digital clock (follows phone 12/24h setting) =====
@@ -626,6 +735,8 @@
       <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="0" width="250" height="56">
         <Font family="SYNC_TO_DEVICE" size="48" weight="LIGHT" color="#FFFFFFFF" />
       </TimeText>
+      <!-- Always-on: dimmed -->
+      <Variant mode="AMBIENT" target="alpha" value="130" />
     </DigitalClock>
 
     <!-- ===== Analog hands ===== -->
@@ -633,11 +744,13 @@
     <PartDraw x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
       <Line startX="225" startY="225" endX="225" endY="128"><Stroke color="[CONFIGURATION.hands]" thickness="9" cap="ROUND" /></Line>
       <Transform target="angle" value="[HOUR_0_11_MINUTE] * 30" />
+      <Variant mode="AMBIENT" target="alpha" value="130" />
     </PartDraw>
     <!-- Minute -->
     <PartDraw x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
       <Line startX="225" startY="225" endX="225" endY="62"><Stroke color="[CONFIGURATION.hands]" thickness="6" cap="ROUND" /></Line>
       <Transform target="angle" value="[MINUTE_SECOND] * 6" />
+      <Variant mode="AMBIENT" target="alpha" value="130" />
     </PartDraw>
     <!-- Second (hidden in always-on mode) -->
     <ListConfiguration id="show_seconds">
@@ -653,6 +766,7 @@
     <PartDraw x="215" y="215" width="20" height="20">
       <Ellipse x="2" y="2" width="16" height="16"><Fill color="[CONFIGURATION.accent]" /></Ellipse>
       <Ellipse x="7" y="7" width="6" height="6"><Fill color="#FF000000" /></Ellipse>
+      <Variant mode="AMBIENT" target="alpha" value="130" />
     </PartDraw>
 
   </Scene>
